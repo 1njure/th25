@@ -41,7 +41,7 @@ def handle_document(message):
         os.remove(file_name)
 
         # Вывод полученного JSON для отладки
-        print(output)
+        # print(output)
 
         if "NOT_RECEIPT" in output:
             bot.edit_message_text('Отправленный файл не был определен как чек.', bot_message.chat.id, bot_message.message_id)
