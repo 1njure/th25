@@ -17,6 +17,9 @@ def pdf2json(file):
     with open("src/example.txt") as f:
         example = f.read()
 
+    with open("src/prompt.txt") as f:
+        prompt = f.read()
+
     with open(file, "rb") as f:
         data = f.read()
 
@@ -35,7 +38,7 @@ def pdf2json(file):
                         },
                         {
                             "type": "input_text",
-                            "text": "Собери всю важную для бухгалтерии информацию в виде JSON-структуры. Названия полей должны быть написаны на английском языке, а их содержимое - в оригинале, если это возможно. Дополнительных комментариев не нужно, только JSON. Если файл не является чеком, напиши слово \"NOT_RECEIPT\".",
+                            "text": prompt,
                         },
                     ],
                 },
@@ -60,6 +63,6 @@ def pdf2json(file):
             return["RATE_LIMIT", e]
 
     try:
-        return response.output_text.strip('"').replace("```json", '').replace("}\\n```", '}')
+        return response.output_text.strip('"').replace("```json", '').replace("```", '')
     except Exception as e:
         return [f"ERROR", e]

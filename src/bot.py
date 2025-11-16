@@ -45,6 +45,7 @@ def handle_document(message):
 
         if "NOT_RECEIPT" in output:
             bot.edit_message_text('Отправленный файл не был определен как чек.', bot_message.chat.id, bot_message.message_id)
+            print(output)
             return
 
         if "ERROR" in output[0]:
