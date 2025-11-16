@@ -52,6 +52,11 @@ def handle_document(message):
             print(f'ОШИБКА: При обработке файла в чате {message.chat.id} (№{message.message_id}) произошла ошибка: {output[1]}')
             return
 
+        if "RATE_LIMIT" in output[0]:
+            bot.edit_message_text('Достигнут лимит запросов к модели', bot_message.chat.id, bot_message.message_id)
+            print(f'ОШИБКА: Достигнут лимит запросов при обработке файла в чате {message.chat.id} (№{message.message_id})')
+            return
+
         # Получение оригинального названия файла
         output_name = f'output_{message.message_id}.json'
 

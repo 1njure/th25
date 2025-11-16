@@ -21,40 +21,44 @@ def pdf2json(file):
         data = f.read()
 
     base64_string = base64.b64encode(data).decode("utf-8")
-
-    response = client.responses.create(
-        model=os.getenv("OPENAI_MODEL"),
-        input=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "input_file",
-                        "filename": "input.pdf",
-                        "file_data": f"data:application/pdf;base64,{base64_string}",
-                    },
-                    {
-                        "type": "input_text",
-                        "text": "Собери всю важную для бухгалтерии информацию в виде JSON-структуры. Названия полей должны быть написаны на английском языке, а их содержимое - в оригинале, если это возможно. Дополнительных комментариев не нужно, только JSON. Если файл не является чеком, напиши слово \"NOT_RECEIPT\".",
-                    },
-                ],
+    try:
+        response = client.responses.create(
+            model=os.getenv("OPENAI_MODEL"),
+            input=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "input_file",
+                            "filename": "input.pdf",
+                            "file_data": f"data:application/pdf;base64,{base64_string}",
+                        },
+                        {
+                            "type": "input_text",
+                            "text": "Собери всю важную для бухгалтерии информацию в виде JSON-структуры. Названия полей должны быть написаны на английском языке, а их содержимое - в оригинале, если это возможно. Дополнительных комментариев не нужно, только JSON. Если файл не является чеком, напиши слово \"NOT_RECEIPT\".",
+                        },
+                    ],
+                },
+                {
+                    "role": "system",
+                    "content": [
+                        {
+                            "type": "input_text",
+                            "text": f'Пример:\n\n{example}',
+                        }
+                    ]
+                }
+            ],
+            extra_body={
+                "reasoning": {
+                    "exclude": True
+                }
             },
-            {
-                "role": "system",
-                "content": [
-                    {
-                        "type": "input_text",
-                        "text": f'Пример:\n\n{example}',
-                    }
-                ]
-            }
-        ],
-        extra_body={
-            "reasoning": {
-                "exclude": True
-            }
-        },
-    )
+        )
+    except Exception as e:
+        if e.status_code == 429:
+            return["RATE_LIMIT", e]
+
     try:
         return response.output_text.strip('"').replace("```json", '').replace("}\\n```", '}')
     except Exception as e:
