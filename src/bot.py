@@ -1,7 +1,10 @@
 import telebot
 import json
+from dotenv import load_dotenv
 import os
 from model import pdf2json
+
+load_dotenv()
 
 # Получаем токен бота из переменной среды
 BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
@@ -15,7 +18,7 @@ bot = telebot.TeleBot(BOT_TOKEN)
 def send_welcome(message):
     bot.reply_to(message, "Привет! Отправь мне PDF-файл, и я преобразую его содержимое в JSON.")
 
-@bot.message_handler(content_types=['document'])
+@bot.message_handler(content_types=['document', 'photo'])
 def handle_document(message):
     # Проверяем, что загруженный файл - PDF
     if message.document.mime_type == 'application/pdf':
@@ -33,8 +36,12 @@ def handle_document(message):
         # Удаляем временный файл после обработки
         os.remove(file_name)
 
+        # Вывод полученного JSON для отладки
+        print(output)
+
         # Отправляем результат пользователю
         bot.reply_to(message, f'{output}', parse_mode='Markdown')
+
     else:
         bot.reply_to(message, "Пожалуйста, отправьте файл в формате PDF.")
 
