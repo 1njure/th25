@@ -14,7 +14,7 @@ client = OpenAI(
 )
 
 def pdf2json(file):
-    with open("example.txt") as f:
+    with open("src/example.txt") as f:
         example = f.read()
 
     with open(file, "rb") as f:
