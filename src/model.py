@@ -63,6 +63,6 @@ def pdf2json(file):
             return["RATE_LIMIT", e]
 
     try:
-        return response.output_text.strip('"').replace("```json", '').replace("```", '')
+        return response.output_text.strip('"').replace("```json", '').replace("```", '').strip()
     except Exception as e:
         return [f"ERROR", e]
